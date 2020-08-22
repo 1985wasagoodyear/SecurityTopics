@@ -30,8 +30,9 @@ These all implement common encryption and hashing functionalities. It's importan
 * Symmetric Encryption (AES, SHA, etc)
 * Asymmetric Encryption (RSA and others)
 
-* data can be encrypted/decrypted to/from disk, and the key(s) can be kept in the Keychain.
-* (this part in `EncryptionSample` isn't-quite working, yet)
+Data can be encrypted/decrypted to/from disk, and the key(s) can be kept in the Keychain.
+
+(this part in `EncryptionSample` isn't-quite working, yet)
 
 ## 2. Keychain
 

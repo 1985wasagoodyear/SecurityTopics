@@ -19,7 +19,7 @@ class KeychainDemoViewController: UIViewController {
         static let password = "password"
     }
 
-    // MARK: - Storyboard Outlet
+    // MARK: - Storyboard Outlets
     
     @IBOutlet var usernameTextField: UITextField! {
         didSet {
@@ -48,6 +48,36 @@ class KeychainDemoViewController: UIViewController {
         setupInitialUIFromPersistedData()
     }
     
+    // MARK: - Custom Action Methods
+    
+    @objc func endEditingTapAction() {
+        enableSaveButtonIfNeeded()
+        view.endEditing(true)
+    }
+
+    @IBAction func rememberMeSwitchAction(_ sender: Any) {
+        enableSaveButtonIfNeeded()
+    }
+    
+    @IBAction func saveToKeychainButtonAction(_ sender: Any) {
+        guard let credentials = validateCredentials(),
+            rememberMeSwitch.isOn == true else {
+                UserDefaults.standard.set(false, forKey: ConstantKeys.didRememberMe)
+                return
+        }
+        do {
+            try usernameKeychain.set(credentials.username)
+            try passwordKeychain.set(credentials.password)
+            UserDefaults.standard.set(true, forKey: ConstantKeys.didRememberMe)
+            showAlert(text: "Successfully saved your credentials to Keychain!")
+        }
+        catch {
+            showAlert(text: "Error saving to Keychain", message: error.localizedDescription)
+        }
+    }
+    
+    // MARK: - Credentials-Validation
+    
     func validateCredentials() -> (username: String, password: String)? {
         guard let username = usernameTextField.text,
             username.isEmpty == false,
@@ -58,14 +88,7 @@ class KeychainDemoViewController: UIViewController {
         return (username: username, password: password)
     }
     
-    @objc func endEditingTapAction() {
-        enableSaveButtonIfNeeded()
-        view.endEditing(true)
-    }
-
-    @IBAction func rememberMeSwitchAction(_ sender: Any) {
-        enableSaveButtonIfNeeded()
-    }
+    // MARK: - UI-element-adjustment Methods
     
     func enableSaveButtonIfNeeded() {
         if validateCredentials() != nil {
@@ -85,23 +108,6 @@ class KeychainDemoViewController: UIViewController {
         rememberMeSwitch.isEnabled = false
         saveToKeychainButton.isEnabled = false
         saveToKeychainButton.alpha = 0.5
-    }
-    
-    @IBAction func saveToKeychainButtonAction(_ sender: Any) {
-        guard let credentials = validateCredentials(),
-            rememberMeSwitch.isOn == true else {
-                UserDefaults.standard.set(false, forKey: ConstantKeys.didRememberMe)
-                return
-        }
-        do {
-            try usernameKeychain.set(credentials.username)
-            try passwordKeychain.set(credentials.password)
-            UserDefaults.standard.set(true, forKey: ConstantKeys.didRememberMe)
-            showAlert(text: "Successfully saved your credentials to Keychain!")
-        }
-        catch {
-            showAlert(text: "Error saving to Keychain", message: error.localizedDescription)
-        }
     }
     
 }
