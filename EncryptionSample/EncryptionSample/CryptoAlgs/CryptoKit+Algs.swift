@@ -19,15 +19,26 @@ import CryptoKit
 // maybe? need to look at this more, later.
 extension Data {
     
-    func encrypt(key: Data) throws -> Data {
-        try CryptoKit.AES.GCM.seal(self, using: SymmetricKey(data: key)).ciphertext
+    func encrypt(key: SymmetricKey) throws -> AES.GCM.SealedBox {
+        try AES.GCM.seal(self, using: key)
+    }
+    
+    func encrypt(key: Data) throws -> AES.GCM.SealedBox {
+        try AES.GCM.seal(self, using: SymmetricKey(data: key))
+    }
+    
+}
+
+extension AES.GCM.SealedBox {
+    
+    func decrypt(key: SymmetricKey) throws -> Data {
+        return try AES.GCM.open(self, using: key)
     }
     
     func decrypt(key: Data) throws -> Data {
-        let combined = try AES.GCM.SealedBox(combined: self)
-        return try CryptoKit.AES.GCM.open(combined,
-                               using: SymmetricKey(data: key))
+        return try AES.GCM.open(self, using: SymmetricKey(data: key))
     }
+    
 }
 
 
